@@ -1,0 +1,39 @@
+version: "3.4"
+
+services:
+  localstack:
+    image: localstack/localstack:1.3.1
+    container_name: localstack
+    ports:
+      - "4566-4583:4566-4583"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=s3,sqs
+      - SKIP_SSL_CERT_DOWNLOAD=1
+      - EAGER_SERVICE_LOADING=1
+      - AWS_ACCESS_KEY_ID=Zu8VgBoZMU2xcmOEeS70
+      - AWS_SECRET_ACCESS_KEY=xvnjYyFQyFs44iuUagi4kTHiOGvlK1PiX64LiwOy
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_DEFAULT_OUTPUT=json
+    volumes:
+      - ./localstack/data:/tmp/localstack/data
+      - ./localstack/config:/root/localstack/config
+      - ./localstack/s3:/root/localstack/s3
+    restart: always
+
+  postgres:
+    image: postgres:latest  
+    container_name: meu_postgresql
+    environment:
+      POSTGRES_DB: hangfire  
+      POSTGRES_USER: root 
+      POSTGRES_PASSWORD: root  
+    ports:
+      - "5432:5432"  
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data  
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
